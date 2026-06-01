@@ -10,10 +10,9 @@ namespace TemplateEngine.Abstractions.IronPdf.Providers
     /// IronPDF provider implementation of <see cref="PdfAbstractionBase"/>.
     /// Translates the provider-agnostic <see cref="PdfRenderContext"/> into IronPDF API calls.
     /// </summary>
-    public sealed class IronPdfProvider : PdfAbstractionBase
+    internal sealed class IronPdfProvider : PdfAbstractionBase
     {
-        public IronPdfProvider(IHtmlTemplateEngine templateEngine)
-            : base(templateEngine) { }
+        public IronPdfProvider() : base() { }
 
         protected override async Task<PdfGenerationResult> RenderToPdfAsync(
             PdfRenderContext context,

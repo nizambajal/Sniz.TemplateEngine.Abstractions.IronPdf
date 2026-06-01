@@ -17,8 +17,7 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_NullRequest_ThrowsArgumentNullException()
     {
-        var engine   = new FakeTemplateEngine();
-        var provider = new CapturingPdfProvider(engine);
+        var provider = new CapturingPdfProvider();
 
         Func<Task> act = () => provider.GeneratePdfAsync<InvoiceModel>(null!);
 
@@ -30,28 +29,26 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_CallsTemplateEngine_WithCorrectArguments()
     {
-        var engine   = new FakeTemplateEngine();
-        var provider = new CapturingPdfProvider(engine);
-        var model    = new InvoiceModel("INV-042", 250m);
-        var request  = new PdfGenerationRequest<InvoiceModel>
+        var provider = new CapturingPdfProvider();
+        var model = new InvoiceModel("INV-042", 250m);
+        var request = new PdfGenerationRequest<InvoiceModel>
         {
-            Model    = model,
+            Model = model,
             Template = "<h1>{{InvoiceNumber}}</h1>"
         };
 
         await provider.GeneratePdfAsync(request);
 
-        engine.Calls.Should().HaveCount(1);
-        engine.Calls[0].Template.Should().Be("<h1>{{InvoiceNumber}}</h1>");
-        engine.Calls[0].Model.Should().Be(model);
+        provider.Engine.Calls.Should().HaveCount(1);
+        provider.Engine.Calls[0].Template.Should().Be("<h1>{{InvoiceNumber}}</h1>");
+        provider.Engine.Calls[0].Model.Should().Be(model);
     }
 
     [Fact]
     public async Task GeneratePdfAsync_PassesRenderedHtml_ToProvider()
     {
         const string expectedHtml = "<h1>Rendered!</h1>";
-        var engine   = new FakeTemplateEngine((_, _) => expectedHtml);
-        var provider = new CapturingPdfProvider(engine);
+        var provider = new CapturingPdfProvider(new FakeTemplateEngine((_, _) => expectedHtml));
 
         await provider.GeneratePdfAsync(Requests.Basic());
 
@@ -63,12 +60,11 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_NullDocumentOptions_UsesDefaults()
     {
-        var engine   = new FakeTemplateEngine();
-        var provider = new CapturingPdfProvider(engine);
-        var request  = new PdfGenerationRequest<InvoiceModel>
+        var provider = new CapturingPdfProvider();
+        var request = new PdfGenerationRequest<InvoiceModel>
         {
-            Model           = new InvoiceModel("INV-001", 1m),
-            Template        = "<p/>",
+            Model = new InvoiceModel("INV-001", 1m),
+            Template = "<p/>",
             DocumentOptions = null   // explicitly omitted
         };
 
@@ -91,12 +87,11 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_NullOutputOptions_DefaultsToBinary()
     {
-        var engine   = new FakeTemplateEngine();
-        var provider = new CapturingPdfProvider(engine);
-        var request  = new PdfGenerationRequest<InvoiceModel>
+        var provider = new CapturingPdfProvider();
+        var request = new PdfGenerationRequest<InvoiceModel>
         {
-            Model         = new InvoiceModel("INV-001", 1m),
-            Template      = "<p/>",
+            Model = new InvoiceModel("INV-001", 1m),
+            Template = "<p/>",
             OutputOptions = null
         };
 
@@ -112,22 +107,21 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_SuppliedDocumentOptions_ForwardedToProvider()
     {
-        var engine = new FakeTemplateEngine();
-        var provider = new CapturingPdfProvider(engine);
+        var provider = new CapturingPdfProvider();
         var docOpts = new PdfDocumentOptions
         {
-            PaperSize       = PdfPaperSize.Letter,
-            Orientation     = PdfOrientation.Landscape,
-            Dpi             = 150,
+            PaperSize = PdfPaperSize.Letter,
+            Orientation = PdfOrientation.Landscape,
+            Dpi = 150,
             PrintBackground = false,
-            Zoom            = 1,
-            RenderDelayMs   = 300,
-            Margins         = new PdfMargins { Top = 10, Bottom = 10, Left = 5, Right = 5 }
+            Zoom = 1,
+            RenderDelayMs = 300,
+            Margins = new PdfMargins { Top = 10, Bottom = 10, Left = 5, Right = 5 }
         };
         var request = new PdfGenerationRequest<InvoiceModel>
         {
-            Model           = new InvoiceModel("INV-001", 1m),
-            Template        = "<p/>",
+            Model = new InvoiceModel("INV-001", 1m),
+            Template = "<p/>",
             DocumentOptions = docOpts
         };
 
@@ -139,19 +133,18 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_HeaderOptions_ForwardedToProvider()
     {
-        var engine  = new FakeTemplateEngine();
-        var provider = new CapturingPdfProvider(engine);
-        var header  = new PdfHeaderOptions
+        var provider = new CapturingPdfProvider();
+        var header = new PdfHeaderOptions
         {
             HtmlContent = "<div>Header</div>",
-            HeightInMm    = 20,
+            HeightInMm = 20,
             ShowDivider = true,
             SkipOnPages = [1]
         };
         var request = new PdfGenerationRequest<InvoiceModel>
         {
-            Model         = new InvoiceModel("INV-001", 1m),
-            Template      = "<p/>",
+            Model = new InvoiceModel("INV-001", 1m),
+            Template = "<p/>",
             HeaderOptions = header
         };
 
@@ -163,19 +156,18 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_FooterOptions_ForwardedToProvider()
     {
-        var engine   = new FakeTemplateEngine();
-        var provider = new CapturingPdfProvider(engine);
-        var footer   = new PdfFooterOptions
+        var provider = new CapturingPdfProvider();
+        var footer = new PdfFooterOptions
         {
             HtmlContent = "<div>Page {page} of {total-pages}</div>",
-            HeightInMm    = 12,
+            HeightInMm = 12,
             ShowDivider = true,
             SkipOnPages = [1]
         };
         var request = new PdfGenerationRequest<InvoiceModel>
         {
-            Model         = new InvoiceModel("INV-001", 1m),
-            Template      = "<p/>",
+            Model = new InvoiceModel("INV-001", 1m),
+            Template = "<p/>",
             FooterOptions = footer
         };
 
@@ -187,8 +179,7 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_NullHeaderAndFooter_PassedAsNullToProvider()
     {
-        var engine   = new FakeTemplateEngine();
-        var provider = new CapturingPdfProvider(engine);
+        var provider = new CapturingPdfProvider();
 
         await provider.GeneratePdfAsync(Requests.Basic());
 
@@ -201,8 +192,7 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_InvokesProvider_ExactlyOnce()
     {
-        var engine   = new FakeTemplateEngine();
-        var provider = new CapturingPdfProvider(engine);
+        var provider = new CapturingPdfProvider();
 
         await provider.GeneratePdfAsync(Requests.Basic());
 
@@ -214,12 +204,8 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_CancelledToken_ThrowsOperationCanceledException()
     {
-        var cts    = new CancellationTokenSource();
-        //var engine = new FakeTemplateEngine(async: true); // cancellation-aware overload below
-        var engine = new FakeTemplateEngine(true); // cancellation-aware overload below
-        // Use a template engine that honours ct
-        var cancellingEngine = new CancellationAwareTemplateEngine(cts);
-        var provider         = new CapturingPdfProvider(cancellingEngine);
+        var cts = new CancellationTokenSource();
+        var provider = new CancellationAwarePdfProvider(cts);
 
         await cts.CancelAsync();
 
@@ -233,8 +219,7 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_TemplateEngineFails_ExceptionBubblesUp()
     {
-        var engine   = new ThrowingTemplateEngine(new InvalidOperationException("render boom"));
-        var provider = new CapturingPdfProvider(engine);
+        var provider = new ThrowingEngineProvider(new InvalidOperationException("render boom"));
 
         Func<Task> act = () => provider.GeneratePdfAsync(Requests.Basic());
 
@@ -245,8 +230,7 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_ProviderFails_ExceptionBubblesUp()
     {
-        var engine   = new FakeTemplateEngine();
-        var provider = new ThrowingPdfProvider(engine, new InvalidOperationException("provider boom"));
+        var provider = new ThrowingPdfProvider(new InvalidOperationException("provider boom"));
 
         Func<Task> act = () => provider.GeneratePdfAsync(Requests.Basic());
 
@@ -259,11 +243,10 @@ public class PdfAbstractionBaseTests
     [Fact]
     public async Task GeneratePdfAsync_WorksWithAnyModelType()
     {
-        var engine   = new FakeTemplateEngine();
-        var provider = new CapturingPdfProvider(engine);
-        var request  = new PdfGenerationRequest<EmptyModel>
+        var provider = new CapturingPdfProvider();
+        var request = new PdfGenerationRequest<EmptyModel>
         {
-            Model    = new EmptyModel(),
+            Model = new EmptyModel(),
             Template = "<p>empty</p>"
         };
 
@@ -274,15 +257,27 @@ public class PdfAbstractionBaseTests
     }
 }
 
-// ── Helper for cancellation test ──────────────────────────────────────────────
+// ── Helpers for cancellation test ─────────────────────────────────────────────
 
-file class CancellationAwareTemplateEngine(CancellationTokenSource cts) : IHtmlTemplateEngine
+file class CancellationAwarePdfProvider(CancellationTokenSource cts) : PdfAbstractionBase
 {
-    public Task<string> RenderAsync<T>(string template, T model, CancellationToken ct = default)
-    {
-        ct.ThrowIfCancellationRequested();
-        return Task.FromResult("<p/>");
-    }
+    protected override TemplateEngine.Abstractions.TemplateEngine CreateTemplateEngine()
+        => new CancellationAwareTemplateEngine(cts);
+
+    protected override Task<PdfGenerationResult> RenderToPdfAsync(
+        PdfRenderContext context, CancellationToken ct)
+        => Task.FromResult(PdfGenerationResult.FromBytes("%PDF"u8.ToArray()));
 }
 
+file class CancellationAwareTemplateEngine(CancellationTokenSource cts)
+    : TemplateEngine.Abstractions.TemplateEngine
+{
+    public override string Render<T>(T model, string template)
+    {
+        cts.Token.ThrowIfCancellationRequested();
+        return "<p/>";
+    }
 
+    public override string ResolveProperty(object model, string propertyExpression)
+        => string.Empty;
+}

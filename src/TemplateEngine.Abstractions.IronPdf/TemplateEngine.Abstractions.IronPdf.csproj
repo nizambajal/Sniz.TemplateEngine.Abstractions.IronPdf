@@ -4,10 +4,20 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <RootNamespace>TemplateEngine.Abstractions.IronPdf</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="IronPdf" Version="2026.6.1" />
+    <PackageReference Include="Sniz.HtmlTemplateEngine" Version="1.0.2" />
   </ItemGroup>
+
+	<!--
+    Grants the test project access to internal types (PdfAbstractionBase, IronPdfProvider, etc.)
+    so tests can subclass and verify internals without making them public.
+  -->
+	<ItemGroup>
+		<InternalsVisibleTo Include="TemplateEngine.Abstractions.IronPdf.Tests" />
+	</ItemGroup>
 
 </Project>
