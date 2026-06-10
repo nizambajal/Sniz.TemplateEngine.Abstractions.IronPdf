@@ -14,7 +14,7 @@
 
 		<PackageId>Sniz.HtmlTemplateEngine.Abstractions.IronPdf</PackageId>
 		<Version>1.0.0</Version>
-		<Authors>Nizamuddien TI(nizambajal@gmail.com)</Authors>
+		<Authors>Nizamuddien T I</Authors>
 		<Company>Sniz</Company>
 		<Description>
 			Sniz.HtmlTemplateEngine.Abstractions.IronPdf provides IronPDF integration for Sniz.HtmlTemplateEngine, enabling developers to compile Mustache-style HTML templates, render dynamic HTML content, and generate PDF documents. Supports strongly typed models, dictionaries, dynamic objects, and configurable PDF output options.
