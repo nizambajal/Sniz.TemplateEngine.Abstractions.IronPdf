@@ -52,6 +52,12 @@ namespace TemplateEngine.Abstractions.IronPdf
             var documentOptions = request.DocumentOptions ?? new PdfDocumentOptions();
             var outputOptions = request.OutputOptions ?? new PdfOutputOptions();
 
+            // Return html content immediately if the caller only wants that (e.g. for debugging).
+            if (outputOptions.DataFormat == PdfDataFormat.HtmlContent)
+            {
+                return PdfGenerationResult.FromHtml(html);
+            }
+
             // Step 3 — Delegate to provider (async, real I/O)
             var context = new PdfRenderContext(
                 Html: html,

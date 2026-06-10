@@ -18,6 +18,9 @@
         /// <summary>Absolute path to the written PDF file. Set when DataFormat = File and AsStream = false.</summary>
         public string? FilePath { get; private init; }
 
+        /// <summary>HTML content. Set when DataFormat = HtmlContent and AsStream = false.</summary>
+        public string? HtmlContent { get; private init; }
+
         // ── Factories ─────────────────────────────────────────────────────────────
 
         public static PdfGenerationResult FromBytes(byte[] bytes) =>
@@ -29,6 +32,9 @@
         public static PdfGenerationResult FromFile(string filePath) =>
             new() { FilePath = filePath };
 
+        public static PdfGenerationResult FromHtml(string htmlContent) =>
+            new() { HtmlContent = htmlContent };
+
         // ── Helpers ───────────────────────────────────────────────────────────────
 
         /// <summary>True when this result carries raw binary data.</summary>
@@ -39,6 +45,9 @@
 
         /// <summary>True when this result refers to a saved file.</summary>
         public bool IsFile => FilePath is not null;
+
+        /// <summary>True when this result carries HTML content.</summary>
+        public bool IsHtmlContent => HtmlContent is not null;
 
         /// <summary>
         /// Coerces any result variant to a byte array.
@@ -57,6 +66,9 @@
 
             if (FilePath is not null)
                 return await File.ReadAllBytesAsync(FilePath, ct);
+
+            if (HtmlContent is not null)
+                return System.Text.Encoding.UTF8.GetBytes(HtmlContent);
 
             throw new InvalidOperationException("PdfGenerationResult has no payload.");
         }

@@ -23,10 +23,19 @@
         /// The full output path where the PDF file will be saved.
         /// </summary>
         public string? FilePath { get; set; }
+        
+        /// <summary>
+        /// Required when DataFormat is set to File.
+        /// The full output path where the PDF file will be saved.
+        /// </summary>
+        public string? DocumentName { get; set; }
     }
 
     public enum PdfDataFormat
     {
+        /// <summary>Returns content as HTML.</summary>
+        HtmlContent,
+
         /// <summary>Returns PDF as a byte array.</summary>
         Binary,
 

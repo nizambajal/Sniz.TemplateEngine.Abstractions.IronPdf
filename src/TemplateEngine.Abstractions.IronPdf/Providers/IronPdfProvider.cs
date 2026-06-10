@@ -24,7 +24,7 @@ namespace TemplateEngine.Abstractions.IronPdf.Providers
             ApplyFooter(renderer, context.FooterOptions);
 
             // IronPDF's async render
-            PdfDocument pdf = await renderer.RenderHtmlAsPdfAsync(context.Html);
+            PdfDocument pdf = await renderer.RenderHtmlAsPdfAsync(context.Html, new Uri(Directory.GetCurrentDirectory()));
 
             return await BuildResultAsync(pdf, context.OutputOptions, ct);
         }
@@ -37,9 +37,8 @@ namespace TemplateEngine.Abstractions.IronPdf.Providers
 
             renderer.RenderingOptions.PaperSize = MapPaperSize(opts.PaperSize);
             renderer.RenderingOptions.PaperOrientation = MapOrientation(opts.Orientation);
-            //renderer.RenderingOptions.Dpi = opts.Dpi;
             renderer.RenderingOptions.PrintHtmlBackgrounds = opts.PrintBackground;
-            renderer.RenderingOptions.Zoom = opts.Zoom;
+            //renderer.RenderingOptions.Zoom = opts.Zoom;
 
             if (opts.RenderDelayMs > 0)
                 renderer.RenderingOptions.WaitFor.RenderDelay(opts.RenderDelayMs);
@@ -94,12 +93,23 @@ namespace TemplateEngine.Abstractions.IronPdf.Providers
             {
                 case PdfDataFormat.File:
                     {
-                        if (string.IsNullOrWhiteSpace(opts.FilePath))
-                            throw new InvalidOperationException(
-                                $"{nameof(PdfOutputOptions.FilePath)} must be set when {nameof(PdfDataFormat.File)} is selected.");
+                        var filePath = opts.FilePath;
 
-                        await File.WriteAllBytesAsync(opts.FilePath, pdf.BinaryData, ct);
-                        return PdfGenerationResult.FromFile(opts.FilePath);
+                        if (string.IsNullOrWhiteSpace(opts.FilePath))
+                        {
+                            var downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+
+                            Directory.CreateDirectory(downloadsFolder);
+
+                            var documentName = string.IsNullOrWhiteSpace(opts.DocumentName)
+                                ? $"GeneratedPdf_{DateTime.Now:yyyyMMdd_HHmmss}"
+                                : Path.GetFileNameWithoutExtension(opts.DocumentName);
+
+                            filePath = Path.Combine(downloadsFolder, $"{documentName}.pdf");
+                        }
+
+                        await File.WriteAllBytesAsync(filePath!, pdf.BinaryData, ct);
+                        return PdfGenerationResult.FromFile(filePath!);
                     }
 
                 case PdfDataFormat.Binary:

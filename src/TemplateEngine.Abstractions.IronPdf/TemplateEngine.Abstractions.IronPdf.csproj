@@ -1,16 +1,52 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	  <RootNamespace>TemplateEngine.Abstractions.IronPdf</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<RootNamespace>TemplateEngine.Abstractions.IronPdf</RootNamespace>
+		<AssemblyName>TemplateEngine.Abstractions.IronPdf</AssemblyName>
 
-  <ItemGroup>
-    <PackageReference Include="IronPdf" Version="2026.6.1" />
-    <PackageReference Include="Sniz.HtmlTemplateEngine" Version="1.1.0" />
-  </ItemGroup>
+		<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+		<Optimize Condition="'$(Configuration)' == 'Release'">true</Optimize>
+
+		<PackageId>Sniz.HtmlTemplateEngine.Abstractions.IronPdf</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Nizamuddien TI(nizambajal@gmail.com)</Authors>
+		<Company>Sniz</Company>
+		<Description>
+			Sniz.HtmlTemplateEngine.Abstractions.IronPdf provides IronPDF integration for Sniz.HtmlTemplateEngine, enabling developers to compile Mustache-style HTML templates, render dynamic HTML content, and generate PDF documents. Supports strongly typed models, dictionaries, dynamic objects, and configurable PDF output options.
+		</Description>
+		<PackageTags>
+			sniz;htmltemplateengine;ironpdf;pdf;html-to-pdf;mustache;template-engine;templating;html-template;document-generation
+		</PackageTags>
+
+		<RepositoryUrl>
+			https://github.com/nizambajal/Sniz.TemplateEngine.Abstractions.IronPdf
+		</RepositoryUrl>
+
+		<PackageProjectUrl>
+			https://github.com/nizambajal/Sniz.TemplateEngine.Abstractions.IronPdf
+		</PackageProjectUrl>
+
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="IronPdf" Version="2026.6.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.8" />
+		<PackageReference Include="Sniz.HtmlTemplateEngine" Version="1.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\README.md"
+			  Pack="true"
+			  PackagePath="README.md" />
+	</ItemGroup>
 
 	<!--
     Grants the test project access to internal types (PdfAbstractionBase, IronPdfProvider, etc.)
