@@ -31,6 +31,9 @@
         public string? DocumentName { get; set; }
     }
 
+    /// <summary>
+    /// Specifies the format in which the generated PDF data is returned to the caller.
+    /// </summary>
     public enum PdfDataFormat
     {
         /// <summary>Returns content as HTML.</summary>
